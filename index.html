@@ -1,4 +1,4 @@
-<h3 class="sectionHead" style="color: #2D6A4F;">🔎さがす・見つける</h3>
+<h3 class="sectionHead" style="color: #2D6A4F;"><a href="https://lib-rio.github.io/opac/">🔎</a>さがす・見つける</h3>
 <p class="indent1em">当院所蔵の図書・雑誌・電子資料をまとめて検索できます</p>
 
 <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 14px; color: #333; max-width: 100%; margin: 20px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -13,7 +13,7 @@
   
   <!-- 検索窓とボタン -->
   <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-    <input type="text" id="searchInput" placeholder="例：看護、ガイドライン など" style="flex: 1; padding: 10px 15px; font-size: 14px; border: 2px solid #52796F; border-radius: 25px; outline: none; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+    <input type="text" id="searchInput" placeholder="例：がん看護、ガイドライン など" style="flex: 1; padding: 10px 15px; font-size: 14px; border: 2px solid #52796F; border-radius: 25px; outline: none; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
     <button id="mekaSearchBtn" style="padding: 10px 20px; background-color: #52796F; color: #fff; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">検索する</button>
   </div>
 
@@ -32,7 +32,7 @@
     <!-- 0件のとき -->
     <div id="noResultMsg" style="display:none; color: #333; line-height: 1.6; font-size: 14px; padding: 10px 0;">
       <p style="text-align: center; color: #333; font-size: 0.95em; margin-bottom: 15px;">
-        院内にある出版10年以内の資料からは「<strong id="searchedWord" style="color: #2D6A4F; font-size: 1.05em; font-weight: bold;"></strong>」を見つけられませんでした。
+        「<strong id="searchedWord" style="color: #2D6A4F; font-size: 1.05em; font-weight: bold;"></strong>」を見つけられませんでした。
       </p>
     </div>
   </div><!-- /#resultArea -->
@@ -57,8 +57,8 @@
         💡 お探しの資料が見つからないとき
       </div>
       <p style="margin: 0 0 12px 0; color: #333; line-height: 1.5; font-size: 0.92em;">
-        検索対象は<strong>出版10年以内</strong>の資料です。<br/>
-        全件検索は上の（<strong>全ての図書／雑誌から探す</strong>）をご利用ください。
+        データがうまく反映されていないことがあります。<br/>
+        上の（<strong>全ての図書／雑誌から探す</strong>）もご利用ください。
       </p>
 
       <div style="font-weight: bold; color: #2D6A4F; border-bottom: 1px dashed #C2D5A8; padding-bottom: 4px; margin: 12px 0 8px 0; font-size: 0.95em;">
@@ -89,7 +89,7 @@
 <script>
 /* <![CDATA[ */
 (function() {
-  const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbxz1k8Ci1dzymRzUM4aBBYwm_3-zkPVuWZL0u6Eah72ZBgUdXdRxL9iNe067wTHMvzwCw/exec'; 
+  const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbzWsiV-YHajUwx29YP-lFzFPdmCt35qOxzMaUyjQIAZKl6cafFohQIHMAwGxOJYGDiMkQ/exec'; 
   const LOG_API_URL = 'https://script.google.com/macros/s/AKfycbwOHyZa4l5FROvHUjwhG7EiEf-r7lHey3qhQL2_I7DyUOoIKhfXYMZwFWh0TKltif9T/exec';
   
   const BASE_BOOK_URL = 'https://ls-assist.viewer.kintoneapp.com/public/4eee326aad71c95a685ee880f49566a7916da604e1369f3ddbb3ac5c264ab590';
@@ -207,7 +207,7 @@
 
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
-    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 高速検索中...</div>';
+    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 一生懸命さがしています...</div>';
     noResultMsg.style.display = 'none';
     if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
 
@@ -262,9 +262,9 @@
           sortContainer.innerHTML = `
             <label style="color: #2D6A4F; font-weight: bold;">並び替え: 
               <select id="sortSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #C2D5A8; background: #fff; cursor: pointer;">
-                <option value="new">出版年が新しい順</option>
-                <option value="old">出版年が古い順</option>
-                <option value="title">タイトル 50音順</option>
+                <option value="new">新しい順</option>
+                <option value="old">古い順</option>
+                <option value="title">50音順</option>
               </select>
             </label>
           `;
