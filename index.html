@@ -115,25 +115,57 @@
       mainZasshiBtn.href = BASE_ZASSHI_URL;
       return;
     }
-    
     const encodedWord = encodeURIComponent(word);
     mainBookBtn.href = `${BASE_BOOK_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__20"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
     mainZasshiBtn.href = `${BASE_ZASSHI_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__13"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__16"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
   }
   
-  // ソート処理を行う関数
+  // 各データからHTMLを動的に生成する関数
+  function generateHtml(item) {
+    if (item.type === 'book') {
+      const statusHtml = item.isAvailable ? 
+        `<span style="color: #2D6A4F; font-weight: bold;">✅ ${item.statusText}</span>` : 
+        `<span style="color: #D90429; font-weight: bold;">🚫 ${item.statusText}</span>`;
+      
+      const labels = item.labels || [];
+      const labelHtml = (labels[0] || labels[1] || labels[2]) ? `
+        <div style="display: inline-block; border: 1px solid #D90429; padding: 2px 6px; font-size: 0.85em; margin-right: 8px; background: #FFF0F3; color: #D90429; text-align: center; border-radius: 4px;">
+          <div>${labels[0] || ''}</div><div>${labels[1] || ''}</div><div>${labels[2] || ''}</div>
+        </div>` : '';
+
+      return `
+        <div style="display: flex; align-items: flex-start; gap: 10px;">
+          ${labelHtml}
+          <div style="flex: 1;">
+            <div style="font-weight: bold; color: #2D6A4F; font-size: 1.05em; margin-bottom: 4px;">${item.title}</div>
+            <div style="color: #555; margin-bottom: 4px;">著者: ${item.author} ${item.series ? ' / ' + item.series : ''}</div>
+            <div style="color: #666; font-size: 0.9em; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ ID: ${item.barcode}</div>
+            <div>状態: ${statusHtml}</div>
+          </div>
+        </div>`;
+    } else if (item.type === 'journal') {
+      return `
+        <div style="font-weight: bold; color: #BC6C25; font-size: 1.05em; margin-bottom: 4px;">【特集記事】${item.title}</div>
+        <div style="color: #555; margin-bottom: 4px;">掲載誌: ${item.magazineTitle} ${item.volIssue ? ' / ' + item.volIssue : ''}</div>
+        <div style="color: #666; font-size: 0.9em;">所蔵記録: ${item.holdingRecord}</div>`;
+    } else if (item.type === 'electronic') {
+      let extraInfo = "";
+      if (item.platform) extraInfo = `<span style="font-size:0.85em; background:#E2E8F0; padding:2px 6px; border-radius:4px; margin-left:6px; color:#334155;">${item.platform}</span>`;
+      
+      return `
+        <div style="font-weight: bold; color: #1D3557; font-size: 1.05em; margin-bottom: 4px;">
+          <a href="${item.url}" target="_blank" rel="noopener" style="color: #1D3557; text-decoration: underline;">${item.title}</a> ${extraInfo}
+        </div>
+        <div style="color: #555; font-size: 0.9em;">出版者/発行元: ${item.publisher || item.holding || ''} ${item.range ? '｜ 収録: ' + item.range : ''}</div>`;
+    }
+    return "";
+  }
+
   function sortItems(items, sortType) {
     return items.sort((a, b) => {
-      if (sortType === 'new') {
-        // 出版年の新しい順 (数値が大きいもの優先)
-        return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
-      } else if (sortType === 'old') {
-        // 出版年の古い順
-        return (parseInt(a.year) || 0) - (parseInt(b.year) || 0);
-      } else if (sortType === 'title') {
-        // タイトルの50音（文字コード）順
-        return (a.title || "").localeCompare(b.title || "", 'ja');
-      }
+      if (sortType === 'new') return (b.year || 0) - (a.year || 0);
+      if (sortType === 'old') return (a.year || 0) - (b.year || 0);
+      if (sortType === 'title') return (a.title || "").localeCompare(b.title || "", 'ja');
       return 0;
     });
   }
@@ -141,14 +173,13 @@
   function renderResults() {
     const bookList = document.getElementById('bookList');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
-    
     const nextChunk = matchedItems.slice(currentIndex, currentIndex + PAGE_SIZE);
       
     nextChunk.forEach(item => {
       const div = document.createElement('div');
       div.className = 'item';
       div.style.cssText = 'padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95em;';
-      div.innerHTML = item.html;
+      div.innerHTML = generateHtml(item);
       bookList.appendChild(div);
     });
     
@@ -176,7 +207,7 @@
 
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
-    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 データベースから検索中... (少々お待ちください)</div>';
+    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 高速検索中...</div>';
     noResultMsg.style.display = 'none';
     if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
 
@@ -211,7 +242,6 @@
         }
       });
 
-      // デフォルトで「新着順（新しい順）」にソート
       const sortSelect = document.getElementById('sortSelect');
       const currentSort = sortSelect ? sortSelect.value : 'new';
       sortItems(matchedItems, currentSort);
@@ -224,7 +254,6 @@
       noResultMsg.style.display = hasBook ? 'none' : 'block';
         
       if (hasBook) {
-        // ソート変更セレクトボックスを動的に追加・更新
         let sortContainer = document.getElementById('sortContainer');
         if (!sortContainer) {
           sortContainer = document.createElement('div');
@@ -241,7 +270,6 @@
           `;
           bookResultDiv.insertBefore(sortContainer, bookList);
 
-          // セレクトボックス変更時のイベント
           document.getElementById('sortSelect').addEventListener('change', (e) => {
             sortItems(matchedItems, e.target.value);
             bookList.innerHTML = '';
