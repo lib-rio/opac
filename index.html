@@ -89,22 +89,20 @@
 <script>
 /* <![CDATA[ */
 (function() {
-  // ★ここにGoogle Apps Script (GAS) がJSONを返すウェブアプリのURLを設定します
   const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbxz1k8Ci1dzymRzUM4aBBYwm_3-zkPVuWZL0u6Eah72ZBgUdXdRxL9iNe067wTHMvzwCw/exec'; 
   const LOG_API_URL = 'https://script.google.com/macros/s/AKfycbwOHyZa4l5FROvHUjwhG7EiEf-r7lHey3qhQL2_I7DyUOoIKhfXYMZwFWh0TKltif9T/exec';
   
   const BASE_BOOK_URL = 'https://ls-assist.viewer.kintoneapp.com/public/4eee326aad71c95a685ee880f49566a7916da604e1369f3ddbb3ac5c264ab590';
   const BASE_ZASSHI_URL = 'https://ls-assist.viewer.kintoneapp.com/public/0b0c01cd11a87a93614950e19bacba95340949bc3721f6d1c136188af42ca845';
   
-  let allData = [];     // スプレッドシートから取得した全データ格納用
+  let allData = [];     
   let matchedItems = []; 
   let currentIndex = 0;   
   const PAGE_SIZE = 10;   
   
   function normalize(text) {
     if (!text) return "";
-    return String(text).replace(/[！-～]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))
-               .toLowerCase().trim();
+    return String(text).replace(/[！-～]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)).toLowerCase().trim();
   }
   
   function updateMainButtons(word) {
@@ -123,63 +121,85 @@
     mainZasshiBtn.href = `${BASE_ZASSHI_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__13"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__16"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
   }
   
-  function displayNextPage() {
+  // ソート処理を行う関数
+  function sortItems(items, sortType) {
+    return items.sort((a, b) => {
+      if (sortType === 'new') {
+        // 出版年の新しい順 (数値が大きいもの優先)
+        return (parseInt(b.year) || 0) - (parseInt(a.year) || 0);
+      } else if (sortType === 'old') {
+        // 出版年の古い順
+        return (parseInt(a.year) || 0) - (parseInt(b.year) || 0);
+      } else if (sortType === 'title') {
+        // タイトルの50音（文字コード）順
+        return (a.title || "").localeCompare(b.title || "", 'ja');
+      }
+      return 0;
+    });
+  }
+
+  function renderResults() {
     const bookList = document.getElementById('bookList');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
+    
     const nextChunk = matchedItems.slice(currentIndex, currentIndex + PAGE_SIZE);
       
     nextChunk.forEach(item => {
-      // スプレッドシートのデータ構造（例：item.html など）に合わせてHTML要素を生成
       const div = document.createElement('div');
       div.className = 'item';
-      div.style.cssText = 'padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.95em;';
-      div.innerHTML = item.html; // GAS側で綺麗に構築されたHTML文字列を受け取る想定
+      div.style.cssText = 'padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95em;';
+      div.innerHTML = item.html;
       bookList.appendChild(div);
     });
     
     currentIndex += PAGE_SIZE;
-    loadMoreContainer.style.display = currentIndex < matchedItems.length ? 'block' : 'none';
+    if (loadMoreContainer) {
+      loadMoreContainer.style.display = currentIndex < matchedItems.length ? 'block' : 'none';
+    }
   }
   
   async function mekaSearch() {
     const searchInput = document.getElementById('searchInput');
     const rawWord = searchInput.value.trim();
-    if (!rawWord) return;
-    
-    const normalizedInput = normalize(rawWord);
-    const keywords = normalizedInput.split(/[\s\u3000]+/).filter(k => k !== "");
-      
-    const searchedWordEl = document.getElementById('searchedWord');
-    if (searchedWordEl) searchedWordEl.textContent = rawWord;
-    
-    updateMainButtons(rawWord);
-    
-    // 検索ログ送信
-    if (LOG_API_URL && !LOG_API_URL.includes('ここに')) {
-      fetch(LOG_API_URL, { method: 'POST', body: JSON.stringify({ keyword: rawWord }) }).catch(() => {});
+    if (!rawWord) {
+      alert('検索ワードを入力してください。');
+      return;
     }
     
-    const bookList = document.getElementById('bookList');
     const resultArea = document.getElementById('resultArea');
+    const bookList = document.getElementById('bookList');
     const noResultMsg = document.getElementById('noResultMsg');
     const bookResultDiv = document.getElementById('bookResult');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
     const alwaysSearchHelp = document.getElementById('alwaysSearchHelp');
+    const searchedWordEl = document.getElementById('searchedWord');
+
+    resultArea.style.display = 'block';
+    bookResultDiv.style.display = 'block';
+    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 データベースから検索中... (少々お待ちください)</div>';
+    noResultMsg.style.display = 'none';
+    if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
+
+    const normalizedInput = normalize(rawWord);
+    const keywords = normalizedInput.split(/[\s\u3000]+/).filter(k => k !== "");
+      
+    if (searchedWordEl) searchedWordEl.textContent = rawWord;
+    updateMainButtons(rawWord);
+    
+    if (LOG_API_URL && !LOG_API_URL.includes('ここに')) {
+      fetch(LOG_API_URL, { method: 'POST', body: JSON.stringify({ keyword: rawWord }) }).catch(() => {});
+    }
 
     const checkedTypes = Array.from(document.querySelectorAll('.filter-check:checked')).map(cb => cb.value);
     
     try {
-      // 初回のみスプレッドシート（GAS）からデータを取得
       if (allData.length === 0) {
         const response = await fetch(DATA_API_URL);
-        allData = await response.json(); // [{key: "...", type: "book", html: "..."}, ...]
+        if (!response.ok) throw new Error('サーバーからの応答がありません');
+        allData = await response.json();
       }
     
-      bookList.innerHTML = ''; 
       matchedItems = []; 
-      currentIndex = 0;   
-      let hasBook = false;
-    
       allData.forEach(item => {
         const key = normalize(item.key || "");
         const type = item.type || "";
@@ -188,73 +208,74 @@
     
         if (typeMatch && keywordMatch) {
           matchedItems.push(item); 
-          hasBook = true;
         }
       });
+
+      // デフォルトで「新着順（新しい順）」にソート
+      const sortSelect = document.getElementById('sortSelect');
+      const currentSort = sortSelect ? sortSelect.value : 'new';
+      sortItems(matchedItems, currentSort);
     
-      resultArea.style.display = 'block';
-      if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
+      bookList.innerHTML = ''; 
+      currentIndex = 0;
+      let hasBook = matchedItems.length > 0;
+    
       bookResultDiv.style.display = hasBook ? 'block' : 'none';
       noResultMsg.style.display = hasBook ? 'none' : 'block';
         
       if (hasBook) {
-        displayNextPage(); 
+        // ソート変更セレクトボックスを動的に追加・更新
+        let sortContainer = document.getElementById('sortContainer');
+        if (!sortContainer) {
+          sortContainer = document.createElement('div');
+          sortContainer.id = 'sortContainer';
+          sortContainer.style.cssText = 'text-align: right; margin-bottom: 10px; font-size: 0.9em;';
+          sortContainer.innerHTML = `
+            <label style="color: #2D6A4F; font-weight: bold;">並び替え: 
+              <select id="sortSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #C2D5A8; background: #fff; cursor: pointer;">
+                <option value="new">出版年が新しい順</option>
+                <option value="old">出版年が古い順</option>
+                <option value="title">タイトル 50音順</option>
+              </select>
+            </label>
+          `;
+          bookResultDiv.insertBefore(sortContainer, bookList);
+
+          // セレクトボックス変更時のイベント
+          document.getElementById('sortSelect').addEventListener('change', (e) => {
+            sortItems(matchedItems, e.target.value);
+            bookList.innerHTML = '';
+            currentIndex = 0;
+            renderResults();
+          });
+        }
+        renderResults(); 
       } else {
-        loadMoreContainer.style.display = 'none';
+        if (loadMoreContainer) loadMoreContainer.style.display = 'none';
       }
     
       resultArea.scrollIntoView({behavior: 'smooth', block: 'nearest'});
     
     } catch (error) {
-      console.error('データの読み込みに失敗しました:', error);
-      alert('検索データの取得に失敗しました。設定をご確認ください。');
+      console.error('エラー詳細:', error);
+      bookList.innerHTML = `<div style="color: red; padding: 10px;">⚠️ データの取得に失敗しました。<br><small>${error.message}</small></div>`;
     }
   }
   
-  setTimeout(() => {
+  window.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('mekaSearchBtn');
     const input = document.getElementById('searchInput');
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const allCheck = document.querySelector('.filter-check[value="all"]');
-    const otherChecks = Array.from(document.querySelectorAll('.filter-check:not([value="all"])'));
+    const loadMoreBtn = document.getElementById('loadMoreContainer');
     
-    if(btn) btn.onclick = mekaSearch;
-    if(input) input.onkeydown = (e) => { if (e.key === 'Enter') mekaSearch(); };
-      
-    if (input) {
-      input.addEventListener('input', (e) => {
-        updateMainButtons(e.target.value.trim());
-      });
-      updateMainButtons('');
+    if(btn) btn.addEventListener('click', mekaSearch);
+    if(input) {
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') mekaSearch(); });
+      input.addEventListener('input', (e) => { updateMainButtons(e.target.value.trim()); });
     }
-    
     if(loadMoreBtn) {
-      loadMoreBtn.onclick = (e) => { e.preventDefault(); displayNextPage(); };
+      loadMoreBtn.addEventListener('click', (e) => { e.preventDefault(); renderResults(); });
     }
-    
-    if(allCheck) {
-      allCheck.addEventListener('change', () => {
-        otherChecks.forEach(cb => cb.checked = allCheck.checked);
-      });
-    }
-    
-    otherChecks.forEach(cb => {
-      cb.addEventListener('change', () => {
-        const allChecked = otherChecks.every(c => c.checked);
-        const noneChecked = otherChecks.every(c => !c.checked);
-        if (allChecked) {
-          allCheck.checked = true;
-          allCheck.indeterminate = false;
-        } else if (noneChecked) {
-          allCheck.checked = false;
-          allCheck.indeterminate = false;
-        } else {
-          allCheck.checked = false;
-          allCheck.indeterminate = true; 
-        }
-      });
-    });
-  }, 500);
+  });
 })();
 /* ]]> */
 </script>
