@@ -252,7 +252,25 @@ async function mekaSearch() {
 
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
-    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🪄 一生懸命さがしています！　🏃（※初回の検索結果の表示までは40秒くらいかかります。そのままお待ちください...）</div>';
+     bookList.innerHTML = `
+  <div style="text-align: center; padding: 20px; color: #52796F; font-weight: bold;">
+    <style>
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+      }
+      .blinking-msg {
+        animation: blink 1.5s infinite ease-in-out;
+      }
+    </style>
+    <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">
+     🔎 ただいま一生懸命検索しています！
+    </div>
+    <div style="font-size: 0.85em; color: #666; font-weight: normal">
+      （※初回の検索結果の表示までは40秒くらいかかります。そのままお待ちください...）
+    </div>
+  </div>
+`;
     noResultMsg.style.display = 'none';
     if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
 
