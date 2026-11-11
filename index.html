@@ -162,7 +162,6 @@
   
   function generateHtml(item) {
     if (item.type === 'book') {
-      // 貸出中などの場合のみ、日付を添えた注釈文字列を作成
       let dateInfo = "";
       if (!item.isAvailable && item.statusDate) {
         dateInfo = ` <span style="font-size: 0.8em; color: #666;">（※${item.statusDate}時点）</span>`;
@@ -234,7 +233,7 @@
     }
   }
   
-async function mekaSearch() {
+  async function mekaSearch() {
     const searchInput = document.getElementById('searchInput');
     const rawWord = searchInput.value.trim();
     if (!rawWord) {
@@ -252,25 +251,25 @@ async function mekaSearch() {
 
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
-     bookList.innerHTML = `
-  <div style="text-align: center; padding: 20px; color: #52796F; font-weight: bold;">
-    <style>
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-      }
-      .blinking-msg {
-        animation: blink 1.5s infinite ease-in-out;
-      }
-    </style>
-    <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">
-     🔎 ただいま一生懸命検索しています！
-    </div>
-    <div style="font-size: 0.85em; color: #666; font-weight: normal">
-      （※初回の検索結果の表示までは40秒くらいかかります。そのままお待ちください...）
-    </div>
-  </div>
-`;
+    bookList.innerHTML = `
+      <div style="text-align: center; padding: 20px; color: #52796F; font-weight: bold;">
+        <style>
+          @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+          }
+          .blinking-msg {
+            animation: blink 1.5s infinite ease-in-out;
+          }
+        </style>
+        <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">
+          🔎 ただいま一生懸命検索しています！
+        </div>
+        <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">
+          （※初回の検索結果の表示までは40秒くらいかかります。そのままお待ちください...）
+        </div>
+      </div>
+    `;
     noResultMsg.style.display = 'none';
     if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
 
@@ -287,10 +286,9 @@ async function mekaSearch() {
     const checkedTypes = Array.from(document.querySelectorAll('.filter-check:checked')).map(cb => cb.value);
     
     try {
-      // まだ事前読み込みが終わっていなければ待機（タイムアウトを3分＝180秒に延長）
       if (!isDataLoaded) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 180000); // 3分間まで待機を許可
+        const timeoutId = setTimeout(() => controller.abort(), 180000);
 
         const response = await fetch(DATA_API_URL, { signal: controller.signal });
         clearTimeout(timeoutId);
@@ -368,7 +366,32 @@ async function mekaSearch() {
     const btn = document.getElementById('mekaSearchBtn');
     const input = document.getElementById('searchInput');
     const loadMoreBtn = document.getElementById('loadMoreContainer');
-    
+    const filterChecks = document.querySelectorAll('.filter-check');
+    const allCheck = document.querySelector('.filter-check[value="all"]');
+    const subChecks = document.querySelectorAll('.filter-check:not([value="all"])');
+
+    // ★チェックボックスの連動
+    filterChecks.forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.value === 'all') {
+          // 「すべて」が変更されたとき：ONなら全部ON、OFFなら全部OFF
+          subChecks.forEach(sub => { sub.checked = allCheck.checked; });
+        } else {
+          // 個別チェックが変更されたとき：「すべて」の状態を自動判定
+          const allSubChecked = Array.from(subChecks).every(sub => sub.checked);
+          const anySubChecked = Array.from(subChecks).some(sub => sub.checked);
+
+          if (allSubChecked) {
+            allCheck.checked = true;
+          } else {
+            allCheck.checked = false;
+          }
+
+          // もし個別がすべて外されたら、「すべて」も外す（逆に何もない状態を防ぐならお好みで）
+        }
+      });
+    });
+
     if(btn) btn.addEventListener('click', mekaSearch);
     if(input) {
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') mekaSearch(); });
