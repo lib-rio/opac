@@ -117,7 +117,7 @@
   let isDataLoading = false;
   let isDataLoaded = false;
   
-  // ページ読み込みと同時に、裏側でデータを非同期先読み（バックグラウンドロード）
+  // ★修正：ページ読み込みを待たず、スクリプト実行と同時にバックグラウンド先読みを即時発火
   function preloadData() {
     if (isDataLoaded || isDataLoading) return;
     isDataLoading = true;
@@ -136,6 +136,9 @@
         isDataLoading = false;
       });
   }
+  
+  // 即座に実行開始
+  preloadData();
 
   function normalize(text) {
     if (!text) return "";
@@ -260,7 +263,7 @@
     const checkedTypes = Array.from(document.querySelectorAll('.filter-check:checked')).map(cb => cb.value);
     
     try {
-      // まだ事前読み込みが終わっていなければ、ここで同期的に取得を待つ
+      // まだ事前読み込みが終わっていなければ待機
       if (!isDataLoaded) {
         bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 初回データを読み込んでいます（少しお待ちください）...</div>';
         const response = await fetch(DATA_API_URL);
@@ -334,9 +337,6 @@
     const input = document.getElementById('searchInput');
     const loadMoreBtn = document.getElementById('loadMoreContainer');
     
-    // ページ表示直後にデータのバックグラウンド取得を開始
-    preloadData();
-
     if(btn) btn.addEventListener('click', mekaSearch);
     if(input) {
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') mekaSearch(); });
