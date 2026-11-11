@@ -234,7 +234,7 @@
     }
   }
   
-  async function mekaSearch() {
+async function mekaSearch() {
     const searchInput = document.getElementById('searchInput');
     const rawWord = searchInput.value.trim();
     if (!rawWord) {
@@ -252,7 +252,7 @@
 
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
-    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 一生懸命さがしています...</div>';
+    bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 初回データを読み込んでいます（※少し時間がかかります。そのままお待ちください...）</div>';
     noResultMsg.style.display = 'none';
     if (alwaysSearchHelp) alwaysSearchHelp.style.display = 'block';
 
@@ -269,10 +269,14 @@
     const checkedTypes = Array.from(document.querySelectorAll('.filter-check:checked')).map(cb => cb.value);
     
     try {
-      // まだ事前読み込みが終わっていなければ待機
+      // まだ事前読み込みが終わっていなければ待機（タイムアウトを3分＝180秒に延長）
       if (!isDataLoaded) {
-        bookList.innerHTML = '<div style="color: #52796F; padding: 10px; font-weight: bold;">🔄 初回データを読み込んでいます（少しお待ちください）...</div>';
-        const response = await fetch(DATA_API_URL);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 180000); // 3分間まで待機を許可
+
+        const response = await fetch(DATA_API_URL, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (!response.ok) throw new Error('サーバーからの応答がありません');
         allData = await response.json();
         isDataLoaded = true;
@@ -334,7 +338,11 @@
     
     } catch (error) {
       console.error('エラー詳細:', error);
-      bookList.innerHTML = `<div style="color: red; padding: 10px;">⚠️ データの取得に失敗しました。<br><small>${error.message}</small></div>`;
+      if (error.name === 'AbortError') {
+        bookList.innerHTML = `<div style="color: red; padding: 10px;">⚠️ データの取得に時間がかかりすぎてタイムアウトしました（3分経過）。もう一度お試しください。</div>`;
+      } else {
+        bookList.innerHTML = `<div style="color: red; padding: 10px;">⚠️ データの取得に失敗しました。<br><small>${error.message}</small></div>`;
+      }
     }
   }
   
