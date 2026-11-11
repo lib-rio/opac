@@ -104,7 +104,7 @@
 <script>
 /* <![CDATA[ */
 (function() {
-  const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbzWCOes-7jYoxIcaiIDoegM0m1At4u9JsFyh2cLoYwvyQKvm_WWebrURl14G7FCnsxehg/exec'; 
+  const DATA_API_URL = 'https://script.google.com/macros/s/AKfycbwrODbSB046LQEugYZo704JIrRec_XFiMfLeD8Gt7iJVK-LKbtFAgyPn4zoGQA1NvU4Wg/exec'; 
   const LOG_API_URL = 'https://script.google.com/macros/s/AKfycbwOHyZa4l5FROvHUjwhG7EiEf-r7lHey3qhQL2_I7DyUOoIKhfXYMZwFWh0TKltif9T/exec';
   
   const BASE_BOOK_URL = 'https://ls-assist.viewer.kintoneapp.com/public/4eee326aad71c95a685ee880f49566a7916da604e1369f3ddbb3ac5c264ab590';
@@ -117,7 +117,7 @@
   let isDataLoading = false;
   let isDataLoaded = false;
   
-  // ★修正：ページ読み込みを待たず、スクリプト実行と同時にバックグラウンド先読みを即時発火
+  // ページ読み込みを待たず、スクリプト実行と同時にバックグラウンド先読みを即時発火
   function preloadData() {
     if (isDataLoaded || isDataLoading) return;
     isDataLoading = true;
@@ -162,9 +162,15 @@
   
   function generateHtml(item) {
     if (item.type === 'book') {
+      // 貸出中などの場合のみ、日付を添えた注釈文字列を作成
+      let dateInfo = "";
+      if (!item.isAvailable && item.statusDate) {
+        dateInfo = ` <span style="font-size: 0.8em; color: #666;">（※${item.statusDate}時点）</span>`;
+      }
+
       const statusHtml = item.isAvailable ? 
         `<span style="color: #2D6A4F; font-weight: bold;">✅ ${item.statusText}</span>` : 
-        `<span style="color: #D90429; font-weight: bold;">🚫 ${item.statusText}</span>`;
+        `<span style="color: #D90429; font-weight: bold;">🚫 ${item.statusText}</span>${dateInfo}`;
       
       const labels = item.labels || [];
       const labelHtml = (labels[0] || labels[1] || labels[2]) ? `
@@ -178,7 +184,7 @@
           <div style="flex: 1; min-width: 200px;">
             <div style="font-weight: bold; color: #2D6A4F; font-size: 1.05em; margin-bottom: 4px;">${item.title}</div>
             <div style="color: #555; margin-bottom: 4px;">著者: ${item.author} ${item.series ? ' / ' + item.series : ''}</div>
-            <div style="color: #666; font-size: 0.9em; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ ID: ${item.barcode}</div>
+            <div style="color: #666; font-size: 0.9em; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ バーコード: ${item.barcode}</div>
             <div>状態: ${statusHtml}</div>
           </div>
         </div>`;
