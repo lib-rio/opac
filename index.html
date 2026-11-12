@@ -2,7 +2,7 @@
 <!-- Google Fonts: M PLUS Rounded 1c -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- スマホでの適度な拡大（約135%）対応 -->
+<!-- スマホでの適度な拡大（約120%）＆チェックボックス横並び保持対応 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -16,36 +16,37 @@
     font-size: 15px;
   }
 
-  /* スマホ対応：PC画面を135%程度に少しだけ大きくする設定 */
+  /* スマホ対応：約120%に拡大し、フィルターが改行されないよう調整 */
   @media screen and (max-width: 768px) {
     #meka-shisho-wrapper {
-      font-size: 1.35em !important; /* 全体を約135%に調整 */
+      font-size: 1.2em !important; /* 全体を約120%に調整 */
     }
     #meka-shisho {
-      padding: 15px !important;
+      padding: 12px !important;
     }
     #meka-shisho .search-box-container {
       flex-direction: column !important;
     }
     #meka-shisho #searchInput {
       width: 100% !important;
-      font-size: 16px !important;
+      font-size: 15px !important;
       padding: 12px 14px !important;
     }
     #meka-shisho #mekaSearchBtn {
       width: 100% !important;
-      font-size: 16px !important;
+      font-size: 15px !important;
       padding: 12px 18px !important;
     }
+    /* チェックボックスのラベルが改行されないようパディングと文字サイズを最適化 */
     #meka-shisho label {
-      font-size: 15px !important;
-      padding: 8px 12px !important;
+      font-size: 14px !important;
+      padding: 5px 8px !important;
     }
     #meka-shisho .result-item-content,
     #meka-shisho #bookResult h4,
     #meka-shisho #noResultMsg,
     #meka-shisho #alwaysSearchHelp {
-      font-size: 15px !important;
+      font-size: 14px !important;
       line-height: 1.5 !important;
     }
     #meka-shisho select, 
@@ -63,7 +64,7 @@
   <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
 
     <!-- フィルターチェックボックス -->
-    <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+    <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
