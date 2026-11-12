@@ -2,38 +2,55 @@
 <!-- Google Fonts: M PLUS Rounded 1c -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- 全体にフォントとスマホ最適化（文字大きめ）を適用 -->
+<!-- スマホでの強制全体拡大（約250%）およびビューポート対応 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+
 <style>
   #meka-shisho-wrapper, #meka-shisho-wrapper * {
     font-family: 'M PLUS Rounded 1c', sans-serif !important;
     box-sizing: border-box;
   }
-  /* スマホ対応：画面幅が狭いときのレイアウトおよび文字サイズ調整（らくらくスマホ並みに大きく） */
-  @media screen and (max-width: 480px) {
+
+  /* デフォルト（PC等）：標準サイズ */
+  #meka-shisho {
+    font-size: 15px;
+  }
+
+  /* スマホ対応：PC画面をそのまま約250%に大きく拡大して表示する設定 */
+  @media screen and (max-width: 768px) {
+    #meka-shisho-wrapper {
+      font-size: 2.5em !important; /* 全体の基準サイズを大きく拡大 */
+    }
     #meka-shisho {
-      padding: 15px !important;
-      font-size: 18px !important;
+      padding: 20px !important;
     }
     #meka-shisho .search-box-container {
       flex-direction: column !important;
     }
     #meka-shisho #searchInput {
       width: 100% !important;
-      font-size: 18px !important;
-      padding: 14px 15px !important;
+      font-size: 24px !important;
+      padding: 16px 20px !important;
     }
     #meka-shisho #mekaSearchBtn {
       width: 100% !important;
-      font-size: 18px !important;
-      padding: 14px 24px !important;
+      font-size: 24px !important;
+      padding: 16px 24px !important;
     }
     #meka-shisho label {
-      font-size: 16px !important;
-      padding: 8px 14px !important;
+      font-size: 22px !important;
+      padding: 10px 16px !important;
     }
-    #meka-shisho .result-item-content {
-      font-size: 1.05em !important;
+    #meka-shisho .result-item-content,
+    #meka-shisho #bookResult h4,
+    #meka-shisho #noResultMsg,
+    #meka-shisho #alwaysSearchHelp {
+      font-size: 22px !important;
       line-height: 1.6 !important;
+    }
+    #meka-shisho select, 
+    #meka-shisho option {
+      font-size: 20px !important;
     }
   }
 </style>
@@ -43,10 +60,10 @@
   <p class="indent1em" style="font-size: 0.95em; color: #555;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます</p>
 
   <!-- 全体コンテナ -->
-  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+  <div id="meka-shisho" style="position: relative; z-index: 1000; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
 
     <!-- フィルターチェックボックス -->
-    <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+    <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
@@ -145,20 +162,20 @@
   let currentIndex = 0;    
   const PAGE_SIZE = 10;    
   let isDataLoaded = false;
-  
-  // 日付文字列を綺麗な「YYYY/MM/DD」形式に変換する関数
-  function formatDate(dateStr) {
-    if (!dateStr) return "";
-    try {
-      const d = new Date(dateStr);
-      if (!isNaN(d.getTime())) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}/${month}/${day}`;
-      }
-    } catch (e) {}
-    return String(dateStr).trim();
+
+  // 日付文字列をきれいな「YYYY/MM/DD」形式に変換する関数 
+  function formatDate(dateStr) { 
+    if (!dateStr) return ""; 
+    try { 
+      const d = new Date(dateStr); 
+      if (!isNaN(d.getTime())) { 
+        const year = d.getFullYear(); 
+        const month = String(d.getMonth() + 1).padStart(2, '0'); 
+        const day = String(d.getDate()).padStart(2, '0'); 
+        return `${year}/${month}/${day}`; 
+      } 
+    } catch (e) {} 
+    return String(dateStr).trim(); 
   }
 
   // データ事前読み込み（LocalStorageキャッシュ対応で高速化）
@@ -222,7 +239,7 @@
       let dateInfo = "";
       if (!item.isAvailable && item.statusDate) {
         const cleanDate = formatDate(item.statusDate);
-        dateInfo = ` <span style="font-size: 0.8em; color: #666;">（※${cleanDate}時点）</span>`;
+        dateInfo = ` <span style="font-size: 0.9em; color: #666;">（※${cleanDate}時点）</span>`;
       }
 
       const statusHtml = item.isAvailable ? 
@@ -239,29 +256,29 @@
         <div class="result-item-content" style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
           ${labelHtml}
           <div style="flex: 1; min-width: 200px;">
-            <div style="font-weight: bold; color: #2D6A4F; font-size: 1.05em; margin-bottom: 4px;">${item.title}</div>
+            <div style="font-weight: bold; color: #2D6A4F; margin-bottom: 4px;">${item.title}</div>
             <div style="color: #555; margin-bottom: 4px;">著者: ${item.author} ${item.series ? ' / ' + item.series : ''}</div>
-            <div style="color: #666; font-size: 0.9em; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ バーコード: ${item.barcode}</div>
+            <div style="color: #666; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ バーコード: ${item.barcode}</div>
             <div>状態: ${statusHtml}</div>
           </div>
         </div>`;
     } else if (item.type === 'journal') {
       return `
         <div class="result-item-content">
-          <div style="font-weight: bold; color: #BC6C25; font-size: 1.05em; margin-bottom: 4px;">【特集記事】${item.title}</div>
+          <div style="font-weight: bold; color: #BC6C25; margin-bottom: 4px;">【特集記事】${item.title}</div>
           <div style="color: #555; margin-bottom: 4px;">掲載誌: ${item.magazineTitle} ${item.volIssue ? ' / ' + item.volIssue : ''}</div>
-          <div style="color: #666; font-size: 0.9em;">所蔵記録: ${item.holdingRecord}</div>
+          <div style="color: #666;">所蔵記録: ${item.holdingRecord}</div>
         </div>`;
     } else if (item.type === 'electronic') {
       let extraInfo = "";
-      if (item.platform) extraInfo = `<span style="font-size:0.85em; background:#E2E8F0; padding:2px 6px; border-radius:4px; margin-left:6px; color:#334155;">${item.platform}</span>`;
+      if (item.platform) extraInfo = `<span style="background:#E2E8F0; padding:2px 6px; border-radius:4px; margin-left:6px; color:#334155;">${item.platform}</span>`;
       
       return `
         <div class="result-item-content">
-          <div style="font-weight: bold; color: #1D3557; font-size: 1.05em; margin-bottom: 4px;">
+          <div style="font-weight: bold; color: #1D3557; margin-bottom: 4px;">
             <a href="${item.url}" target="_blank" rel="noopener" style="color: #1D3557; text-decoration: underline;">${item.title}</a> ${extraInfo}
           </div>
-          <div style="color: #555; font-size: 0.9em;">出版者/発行元: ${item.publisher || item.holding || ''} ${item.range ? '｜ 収録: ' + item.range : ''}</div>
+          <div style="color: #555;">出版者/発行元: ${item.publisher || item.holding || ''} ${item.range ? '｜ 収録: ' + item.range : ''}</div>
         </div>`;
     }
     return "";
@@ -284,7 +301,7 @@
     nextChunk.forEach(item => {
       const div = document.createElement('div');
       div.className = 'item';
-      div.style.cssText = 'padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.95em;';
+      div.style.cssText = 'padding: 12px 0; border-bottom: 1px solid #eee;';
       div.innerHTML = generateHtml(item);
       bookList.appendChild(div);
     });
@@ -387,7 +404,7 @@
           sortContainer.style.cssText = 'text-align: right; margin-bottom: 10px; font-size: 0.9em;';
           sortContainer.innerHTML = `
             <label style="color: #2D6A4F; font-weight: bold;">並び替え: 
-              <select id="sortSelect" style="padding: 4px 8px; border-radius: 4px; border: 1px solid #C2D5A8; background: #fff; cursor: pointer;">
+              <select id="sortSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #C2D5A8; background: #fff; cursor: pointer;">
                 <option value="new">新しい順</option>
                 <option value="old">古い順</option>
                 <option value="title">50音順</option>
