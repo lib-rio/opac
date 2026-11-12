@@ -2,8 +2,8 @@
 <!-- Google Fonts: M PLUS Rounded 1c -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 
-<!-- スマホで全体拡大　-->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.25, user-scalable=yes">
+<!-- スマホでの適度な拡大（約135%）対応 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
   #meka-shisho-wrapper, #meka-shisho-wrapper * {
@@ -16,41 +16,41 @@
     font-size: 15px;
   }
 
-  /* スマホ対応：PC画面をそのまま約250%に大きく拡大して表示する設定 */
+  /* スマホ対応：PC画面を135%程度に少しだけ大きくする設定 */
   @media screen and (max-width: 768px) {
     #meka-shisho-wrapper {
-      font-size: 2.5em !important; /* 全体の基準サイズを大きく拡大 */
+      font-size: 1.35em !important; /* 全体を約135%に調整 */
     }
     #meka-shisho {
-      padding: 20px !important;
+      padding: 15px !important;
     }
     #meka-shisho .search-box-container {
       flex-direction: column !important;
     }
     #meka-shisho #searchInput {
       width: 100% !important;
-      font-size: 24px !important;
-      padding: 16px 20px !important;
+      font-size: 16px !important;
+      padding: 12px 14px !important;
     }
     #meka-shisho #mekaSearchBtn {
       width: 100% !important;
-      font-size: 24px !important;
-      padding: 16px 24px !important;
+      font-size: 16px !important;
+      padding: 12px 18px !important;
     }
     #meka-shisho label {
-      font-size: 22px !important;
-      padding: 10px 16px !important;
+      font-size: 15px !important;
+      padding: 8px 12px !important;
     }
     #meka-shisho .result-item-content,
     #meka-shisho #bookResult h4,
     #meka-shisho #noResultMsg,
     #meka-shisho #alwaysSearchHelp {
-      font-size: 22px !important;
-      line-height: 1.6 !important;
+      font-size: 15px !important;
+      line-height: 1.5 !important;
     }
     #meka-shisho select, 
     #meka-shisho option {
-      font-size: 20px !important;
+      font-size: 14px !important;
     }
   }
 </style>
@@ -60,10 +60,10 @@
   <p class="indent1em" style="font-size: 0.95em; color: #555;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます</p>
 
   <!-- 全体コンテナ -->
-  <div id="meka-shisho" style="position: relative; z-index: 1000; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
 
     <!-- フィルターチェックボックス -->
-    <div style="margin-bottom: 12px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
+    <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
@@ -152,10 +152,9 @@
   const BASE_BOOK_URL = 'https://ls-assist.viewer.kintoneapp.com/public/4eee326aad71c95a685ee880f49566a7916da604e1369f3ddbb3ac5c264ab590';
   const BASE_ZASSHI_URL = 'https://ls-assist.viewer.kintoneapp.com/public/0b0c01cd11a87a93614950e19bacba95340949bc3721f6d1c136188af42ca845';
   
-  // キャッシュ用キー名
   const CACHE_KEY = 'meka_shisho_all_data_v1';
   const CACHE_TIME_KEY = 'meka_shisho_time_v1';
-  const CACHE_DURATION = 1000 * 60 * 30; // 30分間有効
+  const CACHE_DURATION = 1000 * 60 * 30;
 
   let allData = [];      
   let matchedItems = []; 
@@ -163,7 +162,6 @@
   const PAGE_SIZE = 10;    
   let isDataLoaded = false;
 
-  // 日付文字列をきれいな「YYYY/MM/DD」形式に変換する関数 
   function formatDate(dateStr) { 
     if (!dateStr) return ""; 
     try { 
@@ -178,10 +176,8 @@
     return String(dateStr).trim(); 
   }
 
-  // データ事前読み込み（LocalStorageキャッシュ対応で高速化）
   function preloadData() {
     if (isDataLoaded) return;
-
     const cachedData = localStorage.getItem(CACHE_KEY);
     const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
     const now = new Date().getTime();
@@ -207,9 +203,7 @@
           localStorage.setItem(CACHE_TIME_KEY, now);
         } catch (err) {}
       })
-      .catch(err => {
-        console.warn('バックグラウンド事前読み込み中:', err);
-      });
+      .catch(err => {});
   }
   
   preloadData();
