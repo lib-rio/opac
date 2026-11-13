@@ -177,7 +177,7 @@
     return String(dateStr).trim(); 
   }
 
-  // ★【高速化対応】ページ読み込みと同時にバックグラウンドでデータを先読み＆ローカルストレージにキャッシュ
+  // ★【バックグラウンド事前読み込み】ページにアクセスした瞬間から裏側でこっそりデータを取得・キャッシュ
   function preloadData() {
     const cachedData = localStorage.getItem(CACHE_KEY);
     const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
@@ -207,7 +207,7 @@
       .catch(err => {});
   }
   
-  // スクリプト読み込み時に即座にプリロード開始
+  // ページ読み込み時に即座に裏側で実行開始
   preloadData();
 
   function normalize(text) {
@@ -230,6 +230,7 @@
     mainZasshiBtn.href = `${BASE_ZASSHI_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__13"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__16"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
   }
   
+  // ★【ISBN・ISSN表示対応】検索結果のHTML生成関数
   function generateHtml(item) {
     if (item.type === 'book') {
       let dateInfo = "";
@@ -244,9 +245,11 @@
       
       const labels = item.labels || [];
       const labelHtml = (labels[0] || labels[1] || labels[2]) ? `
-        <div style="display: inline-block; border: 1px solid #D90429; padding: 2px 6px; font-size: 0.85em; margin-right: 8px; background: #FFF0F3; color: #D90429; text-align: center; border-radius: 4px;">
+        <div style="display: inline-block; border: 1px solid #7E22CE; padding: 2px 6px; font-size: 0.85em; margin-right: 8px; background: #FAF5FF; color: #7E22CE; text-align: center; border-radius: 4px;">
           <div>${labels[0] || ''}</div><div>${labels[1] || ''}</div><div>${labels[2] || ''}</div>
         </div>` : '';
+
+      const isbnHtml = item.isbn ? ` ｜ ISBN: ${item.isbn}` : '';
 
       return `
         <div class="result-item-content" style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
@@ -254,27 +257,31 @@
           <div style="flex: 1; min-width: 200px;">
             <div style="font-weight: bold; color: #581C87; margin-bottom: 4px;">${item.title}</div>
             <div style="color: #555; margin-bottom: 4px;">著者: ${item.author} ${item.series ? ' / ' + item.series : ''}</div>
-            <div style="color: #666; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ バーコード: ${item.barcode}</div>
+            <div style="color: #666; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''})${isbnHtml} ｜ バーコード: ${item.barcode}</div>
             <div>状態: ${statusHtml}</div>
           </div>
         </div>`;
     } else if (item.type === 'journal') {
+      const issnHtml = item.issn ? ` ｜ ISSN: ${item.issn}` : '';
       return `
         <div class="result-item-content">
           <div style="font-weight: bold; color: #B45309; margin-bottom: 4px;">【特集記事】${item.title}</div>
-          <div style="color: #555; margin-bottom: 4px;">掲載誌: ${item.magazineTitle} ${item.volIssue ? ' / ' + item.volIssue : ''}</div>
+          <div style="color: #555; margin-bottom: 4px;">掲載誌: ${item.magazineTitle} (${item.volIssue})${issnHtml}</div>
           <div style="color: #666;">所蔵記録: ${item.holdingRecord}</div>
         </div>`;
     } else if (item.type === 'electronic') {
       let extraInfo = "";
       if (item.platform) extraInfo = `<span style="background:#F3E8FF; padding:2px 6px; border-radius:4px; margin-left:6px; color:#6B21A8;">${item.platform}</span>`;
       
+      const issnHtml = item.issn ? ` ｜ ISSN: ${item.issn}` : '';
+      const isbnHtml = item.isbn ? ` ｜ ISBN: ${item.isbn}` : '';
+
       return `
         <div class="result-item-content">
           <div style="font-weight: bold; color: #4338CA; margin-bottom: 4px;">
             <a href="${item.url}" target="_blank" rel="noopener" style="color: #4338CA; text-decoration: underline;">${item.title}</a> ${extraInfo}
           </div>
-          <div style="color: #555;">出版者/発行元: ${item.publisher || item.holding || ''} ${item.range ? '｜ 収録: ' + item.range : ''}</div>
+          <div style="color: #555;">出版者/発行元: ${item.publisher || item.holding || ''}${issnHtml}${isbnHtml} ${item.range ? '｜ 収録: ' + item.range : ''}</div>
         </div>`;
     }
     return "";
@@ -327,7 +334,7 @@
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
     
-    // すでにプリロードが完了していれば待たずに即時検索。万が一未ロードの時のみ最小限のメッセージ表示
+    // すでに裏側でプリロードが完了していれば一瞬で検索。未完了の時のみメッセージ表示
     if (!isDataLoaded) {
       bookList.innerHTML = `
         <div style="text-align: center; padding: 20px; color: #7E22CE; font-weight: bold;">
@@ -336,7 +343,7 @@
             .blinking-msg { animation: blink 1.5s infinite ease-in-out; }
           </style>
           <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">🔎一生懸命検索しています！！</div>
-          <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">（※初回データ読み込み中です。少々お待ちください🙇‍♀️）</div>
+          <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">（※初回データを読み込んでいます。少々お待ちください🙇‍♀️）</div>
         </div>
       `;
     } else {
