@@ -57,42 +57,42 @@
 </style>
 
 <div id="meka-shisho-wrapper" style="width: 100%; max-width: 100%; margin: 0 auto;">
-  <h3 class="sectionHead" style="color: #2D6A4F; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a>さがす・見つける</h3>
+  <h3 class="sectionHead" style="color: #581C87; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a>さがす・見つける</h3>
   <p class="indent1em" style="font-size: 0.95em; color: #555;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます</p>
 
-  <!-- 全体コンテナ -->
-  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #EBF5EC; border-radius: 12px; text-align: center; border: 2px solid #A3B18A; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+  <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
+  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
 
     <!-- フィルターチェックボックス -->
     <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
-      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
-      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
-      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
-      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #C2D5A8; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="electronic" checked> 電子</label>
-    </div>   
+      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
+      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
+      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
+      <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="electronic" checked> 電子</label>
+    </div>    
     
     <!-- 検索窓とボタン -->
     <div class="search-box-container" style="display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
-      <input type="text" id="searchInput" placeholder="例：がん看護、ガイドライン など" style="flex: 1; min-width: 220px; padding: 12px 15px; font-size: 15px; border: 2px solid #52796F; border-radius: 25px; outline: none; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
-      <button id="mekaSearchBtn" style="padding: 12px 24px; background-color: #52796F; color: #fff; border: none; border-radius: 25px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">検索する</button>
+      <input type="text" id="searchInput" placeholder="例：がん看護、ガイドライン など" style="flex: 1; min-width: 220px; padding: 12px 15px; font-size: 15px; border: 2px solid #7E22CE; border-radius: 25px; outline: none; background: white; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+      <button id="mekaSearchBtn" style="padding: 12px 24px; background-color: #7E22CE; color: #fff; border: none; border-radius: 25px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s;">検索する</button>
     </div>
 
     <!-- 検索結果エリア -->
-    <div id="resultArea" style="display:none; text-align: left; margin-top: 20px; background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #C2D5A8;">
-      <hr style="border: 0; border-top: 1px dashed #52796F; margin: 15px 0; opacity: 0.3;">
+    <div id="resultArea" style="display:none; text-align: left; margin-top: 20px; background: #ffffff; padding: 15px; border-radius: 8px; border: 1px solid #D8B4FE;">
+      <hr style="border: 0; border-top: 1px dashed #7E22CE; margin: 15px 0; opacity: 0.3;">
       
       <div id="bookResult">
-        <h4 style="color: #2D6A4F; border-bottom: 2px solid #EBF5EC; padding-bottom: 6px; margin: 10px 0; font-size: 16px;">📚 お探しの資料はこちらですか？</h4>
+        <h4 style="color: #581C87; border-bottom: 2px solid #FAF5FF; padding-bottom: 6px; margin: 10px 0; font-size: 16px;">📚 お探しの資料はこちらですか？</h4>
         <div id="bookList"></div>
         <div id="loadMoreContainer" style="text-align: center; margin: 15px 0; display: none;">
-          <a href="javascript:void(0);" id="loadMoreBtn" class="alink01" style="color: #2D6A4F; font-weight: bold; text-decoration: none; background: #EBF5EC; padding: 8px 16px; border-radius: 20px; display: inline-block; border: 1px solid #C2D5A8;">検索結果をもっと見る ▾</a>
+          <a href="javascript:void(0);" id="loadMoreBtn" class="alink01" style="color: #581C87; font-weight: bold; text-decoration: none; background: #FAF5FF; padding: 8px 16px; border-radius: 20px; display: inline-block; border: 1px solid #D8B4FE;">検索結果をもっと見る ▾</a>
         </div>
       </div>
 
       <!-- 0件のとき -->
       <div id="noResultMsg" style="display:none; color: #333; line-height: 1.6; font-size: 14px; padding: 10px 0;">
         <p style="text-align: center; color: #333; font-size: 0.95em; margin-bottom: 15px;">
-          「<strong id="searchedWord" style="color: #2D6A4F; font-size: 1.05em; font-weight: bold;"></strong>」を見つけられませんでした。
+          「<strong id="searchedWord" style="color: #581C87; font-size: 1.05em; font-weight: bold;"></strong>」を見つけられませんでした。
         </p>
       </div>
     </div><!-- /#resultArea -->
@@ -103,16 +103,16 @@
       <!-- 全件検索ボタン領域 -->
       <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; margin-bottom: 20px;">
         <a id="mainBookBtn" style="text-decoration: none;" href="" target="_blank" rel="noopener">
-          <span style="display: inline-block; background-color: #FEFAE0; color: #BC6C25; padding: 10px 18px; border-radius: 25px; font-weight: bold; box-shadow: 0 3px 0 #D4A373; border: 1px solid #D4A373; font-size: 0.9em;"> 🔍 全ての図書から探す</span>
+          <span style="display: inline-block; background-color: #F3E8FF; color: #6B21A8; padding: 10px 18px; border-radius: 25px; font-weight: bold; box-shadow: 0 3px 0 #D8B4FE; border: 1px solid #D8B4FE; font-size: 0.9em;"> 🔍 全ての図書から探す</span>
         </a>
         <a id="mainZasshiBtn" style="text-decoration: none;" href="" target="_blank" rel="noopener">
-          <span style="display: inline-block; background-color: #FEFAE0; color: #BC6C25; padding: 10px 18px; border-radius: 25px; font-weight: bold; box-shadow: 0 3px 0 #D4A373; border: 1px solid #D4A373; font-size: 0.9em;"> 🔍 全ての雑誌から探す</span>
+          <span style="display: inline-block; background-color: #F3E8FF; color: #6B21A8; padding: 10px 18px; border-radius: 25px; font-weight: bold; box-shadow: 0 3px 0 #D8B4FE; border: 1px solid #D8B4FE; font-size: 0.9em;"> 🔍 全ての雑誌から探す</span>
         </a>
       </div>
 
       <!-- 案内とヒント -->
-      <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9em; border: 1px solid #C2D5A8; text-align: left;">
-        <div style="font-weight: bold; color: #2D6A4F; border-bottom: 2px solid #EBF5EC; padding-bottom: 4px; margin-bottom: 8px; font-size: 0.95em;">
+      <div style="background: #ffffff; padding: 15px; border-radius: 8px; margin-bottom: 10px; font-size: 0.9em; border: 1px solid #D8B4FE; text-align: left;">
+        <div style="font-weight: bold; color: #581C87; border-bottom: 2px solid #FAF5FF; padding-bottom: 4px; margin-bottom: 8px; font-size: 0.95em;">
           💡 お探しの資料が見つからないとき
         </div>
         <p style="margin: 0 0 12px 0; color: #333; line-height: 1.5; font-size: 0.92em;">
@@ -120,7 +120,7 @@
           上の（<strong>全ての図書／雑誌から探す</strong>）もご利用ください。
         </p>
 
-        <div style="font-weight: bold; color: #2D6A4F; border-bottom: 1px dashed #C2D5A8; padding-bottom: 4px; margin: 12px 0 8px 0; font-size: 0.95em;">
+        <div style="font-weight: bold; color: #581C87; border-bottom: 1px dashed #D8B4FE; padding-bottom: 4px; margin: 12px 0 8px 0; font-size: 0.95em;">
           💡 再検索のヒント
         </div>
         <ul style="margin: 0 0 12px 0; padding-left: 20px; color: #555; line-height: 1.5; font-size: 0.92em;">
@@ -129,13 +129,13 @@
           </li>
           <li style="margin-bottom: 6px;">
             <strong>論文の検索:</strong> このフォームは論題ではなく<strong>「特集名」「掲載誌名」</strong>でヒットします。<br/>
-            [<a href="https://login.jamas.or.jp/enter.html" target="_blank" rel="noopener" style="color: #2D6A4F; text-decoration: underline;">医中誌Web</a>] 
-            [<a href="https://pubmed.ncbi.nlm.nih.gov/?otool=ijpncchlib" target="_blank" rel="noopener" style="color: #2D6A4F; text-decoration: underline;">PubMed</a>] 
-            [<a href="https://www.niigata-cc.jp/facilities/list/202603_journal_catolog.pdf" target="_blank" rel="noopener" style="color: #2D6A4F; text-decoration: underline;">全雑誌目録</a>] 参照
+            [<a href="https://login.jamas.or.jp/enter.html" target="_blank" rel="noopener" style="color: #7E22CE; text-decoration: underline;">医中誌Web</a>] 
+            [<a href="https://pubmed.ncbi.nlm.nih.gov/?otool=ijpncchlib" target="_blank" rel="noopener" style="color: #7E22CE; text-decoration: underline;">PubMed</a>] 
+            [<a href="https://www.niigata-cc.jp/facilities/list/202603_journal_catolog.pdf" target="_blank" rel="noopener" style="color: #7E22CE; text-decoration: underline;">全雑誌目録</a>] 参照
           </li>
           <li>
             <strong>からだのとしょかんの本:</strong> 一般書・闘病記などは 
-            [<a href="https://booklog.jp/users/karadatosho" target="_blank" rel="noopener" style="color: #2D6A4F; text-decoration: underline;">ブクログ</a>] で検索できます。
+            [<a href="https://booklog.jp/users/karadatosho" target="_blank" rel="noopener" style="color: #7E22CE; text-decoration: underline;">ブクログ</a>] で検索できます。
           </li>
         </ul>
       </div>
@@ -155,7 +155,7 @@
   
   const CACHE_KEY = 'meka_shisho_all_data_v1';
   const CACHE_TIME_KEY = 'meka_shisho_time_v1';
-  const CACHE_DURATION = 1000 * 60 * 30;
+  const CACHE_DURATION = 1000 * 60 * 30; // 30分キャッシュ
 
   let allData = [];      
   let matchedItems = []; 
@@ -177,8 +177,8 @@
     return String(dateStr).trim(); 
   }
 
+  // ★【高速化対応】ページ読み込みと同時にバックグラウンドでデータを先読み＆ローカルストレージにキャッシュ
   function preloadData() {
-    if (isDataLoaded) return;
     const cachedData = localStorage.getItem(CACHE_KEY);
     const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
     const now = new Date().getTime();
@@ -207,6 +207,7 @@
       .catch(err => {});
   }
   
+  // スクリプト読み込み時に即座にプリロード開始
   preloadData();
 
   function normalize(text) {
@@ -251,7 +252,7 @@
         <div class="result-item-content" style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
           ${labelHtml}
           <div style="flex: 1; min-width: 200px;">
-            <div style="font-weight: bold; color: #2D6A4F; margin-bottom: 4px;">${item.title}</div>
+            <div style="font-weight: bold; color: #581C87; margin-bottom: 4px;">${item.title}</div>
             <div style="color: #555; margin-bottom: 4px;">著者: ${item.author} ${item.series ? ' / ' + item.series : ''}</div>
             <div style="color: #666; margin-bottom: 6px;">出版: ${item.publisher} (${item.year || ''}) ｜ バーコード: ${item.barcode}</div>
             <div>状態: ${statusHtml}</div>
@@ -260,18 +261,18 @@
     } else if (item.type === 'journal') {
       return `
         <div class="result-item-content">
-          <div style="font-weight: bold; color: #BC6C25; margin-bottom: 4px;">【特集記事】${item.title}</div>
+          <div style="font-weight: bold; color: #B45309; margin-bottom: 4px;">【特集記事】${item.title}</div>
           <div style="color: #555; margin-bottom: 4px;">掲載誌: ${item.magazineTitle} ${item.volIssue ? ' / ' + item.volIssue : ''}</div>
           <div style="color: #666;">所蔵記録: ${item.holdingRecord}</div>
         </div>`;
     } else if (item.type === 'electronic') {
       let extraInfo = "";
-      if (item.platform) extraInfo = `<span style="background:#E2E8F0; padding:2px 6px; border-radius:4px; margin-left:6px; color:#334155;">${item.platform}</span>`;
+      if (item.platform) extraInfo = `<span style="background:#F3E8FF; padding:2px 6px; border-radius:4px; margin-left:6px; color:#6B21A8;">${item.platform}</span>`;
       
       return `
         <div class="result-item-content">
-          <div style="font-weight: bold; color: #1D3557; margin-bottom: 4px;">
-            <a href="${item.url}" target="_blank" rel="noopener" style="color: #1D3557; text-decoration: underline;">${item.title}</a> ${extraInfo}
+          <div style="font-weight: bold; color: #4338CA; margin-bottom: 4px;">
+            <a href="${item.url}" target="_blank" rel="noopener" style="color: #4338CA; text-decoration: underline;">${item.title}</a> ${extraInfo}
           </div>
           <div style="color: #555;">出版者/発行元: ${item.publisher || item.holding || ''} ${item.range ? '｜ 収録: ' + item.range : ''}</div>
         </div>`;
@@ -326,19 +327,20 @@
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
     
+    // すでにプリロードが完了していれば待たずに即時検索。万が一未ロードの時のみ最小限のメッセージ表示
     if (!isDataLoaded) {
       bookList.innerHTML = `
-        <div style="text-align: center; padding: 20px; color: #52796F; font-weight: bold;">
+        <div style="text-align: center; padding: 20px; color: #7E22CE; font-weight: bold;">
           <style>
             @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
             .blinking-msg { animation: blink 1.5s infinite ease-in-out; }
           </style>
           <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">🔎一生懸命検索しています！！</div>
-          <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">（※初回のデータ読み込みには最大40秒くらいかかります。そのままでお待ちください🙇‍♀️）</div>
+          <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">（※初回データ読み込み中です。少々お待ちください🙇‍♀️）</div>
         </div>
       `;
     } else {
-      bookList.innerHTML = `<div style="text-align: center; padding: 10px; color: #52796F;">検索中...</div>`;
+      bookList.innerHTML = `<div style="text-align: center; padding: 10px; color: #7E22CE;">検索中...</div>`;
     }
 
     noResultMsg.style.display = 'none';
@@ -398,8 +400,8 @@
           sortContainer.id = 'sortContainer';
           sortContainer.style.cssText = 'text-align: right; margin-bottom: 10px; font-size: 0.9em;';
           sortContainer.innerHTML = `
-            <label style="color: #2D6A4F; font-weight: bold;">並び替え: 
-              <select id="sortSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #C2D5A8; background: #fff; cursor: pointer;">
+            <label style="color: #581C87; font-weight: bold;">並び替え: 
+              <select id="sortSelect" style="padding: 6px 10px; border-radius: 4px; border: 1px solid #D8B4FE; background: #fff; cursor: pointer;">
                 <option value="new">新しい順</option>
                 <option value="old">古い順</option>
                 <option value="title">50音順</option>
