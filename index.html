@@ -336,14 +336,28 @@
     
     // すでに裏側でプリロードが完了していれば一瞬で検索。未完了の時のみメッセージ表示
     if (!isDataLoaded) {
-      bookList.innerHTML = `
-        <div style="text-align: center; padding: 20px; color: #7E22CE; font-weight: bold;">
+bookList.innerHTML = `
+        <div style="text-align: center; padding: 25px; color: #7E22CE; font-weight: bold;">
           <style>
-            @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-            .blinking-msg { animation: blink 1.5s infinite ease-in-out; }
+            @keyframes runAround {
+              0% { transform: translateX(-30px) scaleX(1); }
+              45% { transform: translateX(30px) scaleX(1); }
+              50% { transform: translateX(30px) scaleX(-1); }
+              95% { transform: translateX(-30px) scaleX(-1); }
+              100% { transform: translateX(-30px) scaleX(1); }
+            }
+            .running-emoji {
+              display: inline-block;
+              font-size: 1.8em;
+              margin-bottom: 10px;
+              animation: runAround 1.8s infinite ease-in-out;
+            }
           </style>
-          <div style="font-size: 1.1em; margin-bottom: 8px;" class="blinking-msg">🔎ただいま、検索しています！</div>
-          <div style="font-size: 0.85em; color: #666; font-weight: normal" class="blinking-msg">初回のデータ読み込みには最大1分くらいかかることがあります…そのままお待ちください🙇‍♀️（改良テスト中）</div>
+          
+          <!-- 左右に走る絵文字 -->
+          <div class="running-emoji">🏃💨</div>
+          <div style="font-size: 1.1em; margin-bottom: 8px;">🔎ただいま、検索しています！</div>
+          <div style="font-size: 0.85em; color: #666; font-weight: normal">初回のデータ読み込みには最大1分くらいかかることがあります。そのままお待ちください🙇‍♀️</div>
         </div>
       `;
     } else {
