@@ -63,8 +63,13 @@
   <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
   <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
 
+    <!-- ★【右上のデータ基準日表示】 -->
+    <div style="position: absolute; top: 12px; right: 15px; font-size: 0.75em; color: #888; font-weight: normal;">
+      [2026/11/17時点のデータです]
+    </div>
+
     <!-- フィルターチェックボックス -->
-    <div style="margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
+    <div style="margin-top: 10px; margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="book" checked> 図書</label>
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="journal" checked> 雑誌</label>
@@ -163,19 +168,7 @@
   const PAGE_SIZE = 10;    
   let isDataLoaded = false;
 
-  function formatDate(dateStr) { 
-    if (!dateStr) return ""; 
-    try { 
-      const d = new Date(dateStr); 
-      if (!isNaN(d.getTime())) { 
-        const year = d.getFullYear(); 
-        const month = String(d.getMonth() + 1).padStart(2, '0'); 
-        const day = String(d.getDate()).padStart(2, '0'); 
-        return `${year}/${month}/${day}`; 
-      } 
-    } catch (e) {} 
-    return String(dateStr).trim(); 
-  }
+  // 以前使っていたフォーマット関数は不要になったため整理済み
 
   // ★【バックグラウンド事前読み込み】ページにアクセスした瞬間から裏側でこっそりデータを取得・キャッシュ
   function preloadData() {
@@ -230,18 +223,12 @@
     mainZasshiBtn.href = `${BASE_ZASSHI_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__13"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__16"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
   }
   
-  // ★【ISBN・ISSN表示対応】検索結果のHTML生成関数
+  // ★【貸出中の日付表示を削除した検索結果HTML生成関数】
   function generateHtml(item) {
     if (item.type === 'book') {
-      let dateInfo = "";
-      if (!item.isAvailable && item.statusDate) {
-        const cleanDate = formatDate(item.statusDate);
-        dateInfo = ` <span style="font-size: 0.9em; color: #666;">（※${cleanDate}時点）</span>`;
-      }
-
       const statusHtml = item.isAvailable ? 
         `<span style="color: #2D6A4F; font-weight: bold;">✅ ${item.statusText}</span>` : 
-        `<span style="color: #D90429; font-weight: bold;">🚫 ${item.statusText}</span>${dateInfo}`;
+        `<span style="color: #D90429; font-weight: bold;">🚫 ${item.statusText}</span>`;
       
       const labels = item.labels || [];
       const labelHtml = (labels[0] || labels[1] || labels[2]) ? `
@@ -334,7 +321,6 @@
     resultArea.style.display = 'block';
     bookResultDiv.style.display = 'block';
     
-    // すでに裏側でプリロードが完了していれば一瞬で検索。未完了の時のみメッセージ表示
     if (!isDataLoaded) {
       bookList.innerHTML = `
         <div style="text-align: center; padding: 25px; color: #7E22CE; font-weight: bold;">
@@ -354,8 +340,6 @@
             }
           </style>
           <div class="running-emoji">🏃‍♀️💨</div>
-          
-          <!-- 点滅なしのすっきりしたメッセージ -->
           <div style="font-size: 1.1em; margin-bottom: 8px;">🔎ただいま、検索しています！</div>
           <div style="font-size: 0.85em; color: #666; font-weight: normal">初回のデータ読み込みには最大1分くらいかかることがあります😔そのままお待ちください🙇‍♀️</div>
         </div>
