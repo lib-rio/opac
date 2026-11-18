@@ -1,4 +1,4 @@
-<title>けんさくさん</title>
+<title>検索さん</title>
 <!-- Google Fonts: M PLUS Rounded 1c -->
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 
@@ -58,14 +58,19 @@
 
 <div id="meka-shisho-wrapper" style="width: 100%; max-width: 100%; margin: 0 auto;">
   <h3 class="sectionHead" style="color: #581C87; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a>さがす・見つける</h3>
-  <p class="indent1em" style="font-size: 0.95em; color: #555;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます</p>
+  <p class="indent1em" style="font-size: 0.9em; color: #555; line-height: 1.6; margin-bottom: 8px;">
+    当院所蔵の図書・雑誌・電子資料をまとめて検索できます。<br>
+    <span style="font-size: 0.88em; color: #DCC2FF;">検索対象は【当院所蔵書籍】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>
+      電子資料は院内LANまたは配布済みのID・パスワードを使ってご利用ください。
+    </span>
+  </p>
 
   <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
   <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
 
     <!-- ★【右上のデータ基準日表示】 -->
     <div style="position: absolute; top: 12px; right: 15px; font-size: 0.75em; color: #888; font-weight: normal;">
-      [2026/11/17時点のデータです]
+      [2026/11/18時点のデータです]
     </div>
     <br>
     <br>
@@ -170,9 +175,6 @@
   const PAGE_SIZE = 10;    
   let isDataLoaded = false;
 
-  // 以前使っていたフォーマット関数は不要になったため整理済み
-
-  // ★【バックグラウンド事前読み込み】ページにアクセスした瞬間から裏側でこっそりデータを取得・キャッシュ
   function preloadData() {
     const cachedData = localStorage.getItem(CACHE_KEY);
     const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
@@ -202,7 +204,6 @@
       .catch(err => {});
   }
   
-  // ページ読み込み時に即座に裏側で実行開始
   preloadData();
 
   function normalize(text) {
@@ -225,7 +226,6 @@
     mainZasshiBtn.href = `${BASE_ZASSHI_URL}?additionalFilters=%5B%7B"with"%3A"and"%2C"filters"%3A%5B%7B"field"%3A"文字列__複数行_"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__13"%2C"sign"%3A"like"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%2C%7B"field"%3A"文字列__1行__16"%2C"sign"%3A"%3D"%2C"value"%3A"${encodedWord}"%2C"with"%3A"or"%7D%5D%7D%5D`;
   }
   
-  // ★【貸出中の日付表示を削除した検索結果HTML生成関数】
   function generateHtml(item) {
     if (item.type === 'book') {
       const statusHtml = item.isAvailable ? 
