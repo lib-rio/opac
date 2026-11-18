@@ -66,12 +66,12 @@
   width: 0;
   margin: 0 0 8px 0;
   animation:
-    type 3s steps(28, end) forwards,
+    type 3s steps(23, end) forwards,
     blink 1.0s step-end infinite;
 }
 @keyframes type {
   to {
-    width: 28em;
+    width: 23em;
   }
 }
 @keyframes blink {
@@ -86,16 +86,14 @@
   line-height: 1.5;
 }
 </style>
-<p class="typing" style="font-size: 0.9em; color: #555; line-height: 1.6;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます！</p>
-<p class="sub-text">検索対象は【所蔵書籍】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>電子資料は院内LANまたはID・パスワードを使ってご利用ください。</p>
-
-  <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
-  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
-
-    <!-- ★【右上のデータ基準日表示】 -->
+<p class="typing" style="font-size: 0.8em; color: #555; line-height: 1.6;">図書・雑誌・電子資料をまとめて検索できます！</p>
+<p class="sub-text">検索対象は【所蔵図書】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>電子資料は院内LANまたはID・パスワードを使ってご利用ください。</p>
+ <!-- ★【右上のデータ基準日表示】 -->
     <div style="position: absolute; top: 12px; right: 15px; font-size: 0.75em; color: #888; font-weight: normal;">
       [2026/11/18時点のデータです]
     </div>
+  <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
+  <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
     <!-- フィルターチェックボックス -->
     <div style="margin-top: 10px; margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
