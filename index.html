@@ -55,15 +55,43 @@
     }
   }
 </style>
-
 <div id="meka-shisho-wrapper" style="width: 100%; max-width: 100%; margin: 0 auto;">
   <h3 class="sectionHead" style="color: #581C87; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a>さがす・見つける</h3>
-  <p class="indent1em" style="font-size: 0.9em; color: #555; line-height: 1.6; margin-bottom: 8px;">
-    当院所蔵の図書・雑誌・電子資料をまとめて検索できます。<br>
-    <span style="font-size: 0.88em; color: #483d8b;">検索対象は【所蔵書籍】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>
-      電子資料は院内LANまたはID・パスワードを使ってご利用ください。
-    </span>
-  </p>
+  <style>
+.typing {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid currentColor;
+  width: 0;
+  margin: 0 0 8px 0;
+  animation:
+    type 3s steps(28, end) forwards,
+    blink 1.0s step-end infinite;
+}
+
+@keyframes type {
+  to {
+    width: 28em;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.sub-text {
+  margin-top: 0;
+  font-size: 0.75em;
+  color: #483d8b;
+  line-height: 1.5;
+}
+</style>
+
+<p class="typing" style="font-size: 0.9em; color: #555; line-height: 1.6;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます！</p>
+<p class="sub-text">検索対象は【所蔵書籍】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>電子資料は院内LANまたはID・パスワードを使ってご利用ください。</p>
 
   <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
   <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
