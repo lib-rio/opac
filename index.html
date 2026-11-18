@@ -69,19 +69,16 @@
     type 3s steps(28, end) forwards,
     blink 1.0s step-end infinite;
 }
-
 @keyframes type {
   to {
     width: 28em;
   }
 }
-
 @keyframes blink {
   50% {
     border-color: transparent;
   }
 }
-
 .sub-text {
   margin-top: 0;
   font-size: 0.75em;
@@ -89,7 +86,6 @@
   line-height: 1.5;
 }
 </style>
-
 <p class="typing" style="font-size: 0.9em; color: #555; line-height: 1.6;">当院所蔵の図書・雑誌・電子資料をまとめて検索できます！</p>
 <p class="sub-text">検索対象は【所蔵書籍】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>電子資料は院内LANまたはID・パスワードを使ってご利用ください。</p>
 
@@ -100,9 +96,6 @@
     <div style="position: absolute; top: 12px; right: 15px; font-size: 0.75em; color: #888; font-weight: normal;">
       [2026/11/18時点のデータです]
     </div>
-    <br>
-    <br>
-
     <!-- フィルターチェックボックス -->
     <div style="margin-top: 10px; margin-bottom: 12px; font-size: 0.95em; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
       <label style="background: #ffffff; padding: 6px 12px; border-radius: 20px; border: 1px solid #E9D5FF; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"><input type="checkbox" class="filter-check" value="all" checked> すべて</label>
