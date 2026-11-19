@@ -193,34 +193,61 @@
   let currentIndex = 0;    
   const PAGE_SIZE = 10;    
   let isDataLoaded = false;
+  let fetchPromise = null;
+  let isEventsInitialized = false;
 
-  function preloadData() {
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-    const now = new Date().getTime();
-
-    if (cachedData && cachedTime && (now - cachedTime < CACHE_DURATION)) {
-      try {
-        allData = JSON.parse(cachedData);
-        isDataLoaded = true;
-        return;
-      } catch (e) {}
+  function loadAllData(forceNetwork = false) {
+    if (!forceNetwork && isDataLoaded && Array.isArray(allData)) {
+      return Promise.resolve(allData);
     }
 
-    fetch(DATA_API_URL)
+    if (!forceNetwork) {
+      const cachedData = localStorage.getItem(CACHE_KEY);
+      const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+      const now = new Date().getTime();
+
+      if (cachedData && cachedTime && (now - Number(cachedTime) < CACHE_DURATION)) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          if (Array.isArray(parsed)) {
+            allData = parsed;
+            isDataLoaded = true;
+            return Promise.resolve(allData);
+          }
+        } catch (e) {}
+      }
+    }
+
+    if (fetchPromise) {
+      return fetchPromise;
+    }
+
+    fetchPromise = fetch(DATA_API_URL)
       .then(response => {
         if (!response.ok) throw new Error('サーバー応答エラー');
         return response.json();
       })
       .then(data => {
-        allData = data;
+        allData = Array.isArray(data) ? data : [];
         isDataLoaded = true;
         try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-          localStorage.setItem(CACHE_TIME_KEY, now);
+          localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
+          localStorage.setItem(CACHE_TIME_KEY, String(new Date().getTime()));
         } catch (err) {}
+        return allData;
       })
-      .catch(err => {});
+      .catch(err => {
+        throw err;
+      })
+      .finally(() => {
+        fetchPromise = null;
+      });
+
+    return fetchPromise;
+  }
+
+  function preloadData() {
+    loadAllData(false).catch(() => {});
   }
   
   preloadData();
@@ -326,7 +353,7 @@
   
   async function mekaSearch() {
     const searchInput = document.getElementById('searchInput');
-    const rawWord = searchInput.value.trim();
+    const rawWord = searchInput ? searchInput.value.trim() : '';
     if (!rawWord) {
       alert('検索ワードを入力してください。');
       return;
@@ -386,16 +413,7 @@
     const checkedTypes = Array.from(document.querySelectorAll('.filter-check:checked')).map(cb => cb.value);
     
     try {
-      if (!isDataLoaded) {
-        const response = await fetch(DATA_API_URL);
-        if (!response.ok) throw new Error('サーバーからの応答がありません');
-        allData = await response.json();
-        isDataLoaded = true;
-        try {
-          localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
-          localStorage.setItem(CACHE_TIME_KEY, new Date().getTime());
-        } catch (e) {}
-      }
+      await loadAllData(false);
     
       matchedItems = []; 
       allData.forEach(item => {
@@ -456,8 +474,9 @@
       bookList.innerHTML = `<div style="color: red; padding: 10px;">⚠️ データの取得に失敗しました。<br><small>${error.message}</small></div>`;
     }
   }
-  
-  window.addEventListener('DOMContentLoaded', () => {
+
+  function initEvents() {
+    if (isEventsInitialized) return;
     const btn = document.getElementById('mekaSearchBtn');
     const input = document.getElementById('searchInput');
     const loadMoreBtn = document.getElementById('loadMoreBtn');
@@ -465,26 +484,33 @@
     const allCheck = document.querySelector('.filter-check[value="all"]');
     const subChecks = document.querySelectorAll('.filter-check:not([value="all"])');
 
+    if (!btn || !input) return;
+    isEventsInitialized = true;
+
     filterChecks.forEach(cb => {
       cb.addEventListener('change', () => {
         if (cb.value === 'all') {
           subChecks.forEach(sub => { sub.checked = allCheck.checked; });
         } else {
           const allSubChecked = Array.from(subChecks).every(sub => sub.checked);
-          allCheck.checked = allSubChecked;
+          if (allCheck) allCheck.checked = allSubChecked;
         }
       });
     });
 
-    if(btn) btn.addEventListener('click', mekaSearch);
-    if(input) {
-      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') mekaSearch(); });
-      input.addEventListener('input', (e) => { updateMainButtons(e.target.value.trim()); });
-    }
-    if(loadMoreBtn) {
+    btn.addEventListener('click', mekaSearch);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') mekaSearch(); });
+    input.addEventListener('input', (e) => { updateMainButtons(e.target.value.trim()); });
+    if (loadMoreBtn) {
       loadMoreBtn.addEventListener('click', (e) => { e.preventDefault(); renderResults(); });
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initEvents);
+  } else {
+    initEvents();
+  }
 })();
 /* ]]> */
 </script>
