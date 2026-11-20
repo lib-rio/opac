@@ -16,6 +16,40 @@
     font-size: 15px;
   }
 
+  /* 虫眼鏡横の極小・淡色ステータス表示（虫眼鏡より約5pt小さく、うっすら見える程度） */
+  #preloadIndicator {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    font-size: 12px;
+    line-height: 1;
+    vertical-align: middle;
+    user-select: none;
+  }
+  #preloadIndicator.is-loading {
+    color: rgba(88, 28, 135, 0.24);
+  }
+  #preloadIndicator.is-ready {
+    color: rgba(120, 113, 133, 0.34);
+  }
+  #preloadIndicator.is-error {
+    color: rgba(180, 83, 9, 0.35);
+  }
+
+  /* loading... の文字が1文字ずつポコポコ上下するアニメ */
+  @keyframes pokoBounce {
+    0%, 60%, 100% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-2.5px);
+    }
+  }
+  .poko-char {
+    display: inline-block;
+    animation: pokoBounce 1.8s infinite ease-in-out;
+  }
+
   /* スマホ対応：約120%に拡大し、フィルターが改行されないよう調整 */
   @media screen and (max-width: 768px) {
     #meka-shisho-wrapper {
@@ -56,7 +90,7 @@
   }
 </style>
 <div id="meka-shisho-wrapper" style="width: 100%; max-width: 100%; margin: 0 auto;">
-  <h3 class="sectionHead" style="color: #581C87; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a></h3>
+  <h3 class="sectionHead" style="color: #581C87; font-size: 1.2em;"><a href="https://lib-rio.github.io/opac/" style="text-decoration:none;">🔎</a><span id="preloadIndicator" class="is-loading" aria-live="polite"><span class="poko-char" style="animation-delay:0s">l</span><span class="poko-char" style="animation-delay:0.08s">o</span><span class="poko-char" style="animation-delay:0.16s">a</span><span class="poko-char" style="animation-delay:0.24s">d</span><span class="poko-char" style="animation-delay:0.32s">i</span><span class="poko-char" style="animation-delay:0.40s">n</span><span class="poko-char" style="animation-delay:0.48s">g</span><span class="poko-char" style="animation-delay:0.56s">.</span><span class="poko-char" style="animation-delay:0.64s">.</span><span class="poko-char" style="animation-delay:0.72s">.</span></span></h3>
   <style>
 .typing {
   display: block;
@@ -90,7 +124,7 @@
 <p class="sub-text">検索対象は【所蔵図書】【所蔵雑誌の特集名】【契約中の電子資料】です。<br>電子資料は院内LANまたはID・パスワードを使ってご利用ください。</p>
  <!-- ★【右上のデータ基準日表示】 -->
     <div style="position: absolute; top: 12px; right: 15px; font-size: 0.75em; color: #888; font-weight: normal;">
-      [2026/11/16時点のデータです]
+      [2026/11/19のデータです]
     </div>
   <!-- 全体コンテナ（すみれ色・ラベンダー基調） -->
   <div id="meka-shisho" style="position: relative; z-index: 1000; font-size: 15px; color: #333; margin: 15px auto; padding: 20px; background-color: #FAF5FF; border-radius: 12px; text-align: center; border: 2px solid #D8B4FE; box-shadow: 0 4px 6px rgba(0,0,0,0.04);">
@@ -196,8 +230,29 @@
   let fetchPromise = null;
   let isEventsInitialized = false;
 
+  function setPreloadIndicator(state) {
+    const el = document.getElementById('preloadIndicator');
+    if (!el) return;
+    el.classList.remove('is-loading', 'is-ready', 'is-error');
+
+    if (state === 'ready') {
+      el.classList.add('is-ready');
+      el.textContent = 'ready';
+    } else if (state === 'error') {
+      el.classList.add('is-error');
+      el.textContent = 'retry';
+    } else {
+      el.classList.add('is-loading');
+      const chars = ['l','o','a','d','i','n','g','.','.','.'];
+      el.innerHTML = chars.map((ch, idx) =>
+        `<span class="poko-char" style="animation-delay:${(idx * 0.08).toFixed(2)}s">${ch}</span>`
+      ).join('');
+    }
+  }
+
   function loadAllData(forceNetwork = false) {
     if (!forceNetwork && isDataLoaded && Array.isArray(allData)) {
+      setPreloadIndicator('ready');
       return Promise.resolve(allData);
     }
 
@@ -212,6 +267,7 @@
           if (Array.isArray(parsed)) {
             allData = parsed;
             isDataLoaded = true;
+            setPreloadIndicator('ready');
             return Promise.resolve(allData);
           }
         } catch (e) {}
@@ -222,6 +278,8 @@
       return fetchPromise;
     }
 
+    setPreloadIndicator('loading');
+
     fetchPromise = fetch(DATA_API_URL)
       .then(response => {
         if (!response.ok) throw new Error('サーバー応答エラー');
@@ -230,6 +288,7 @@
       .then(data => {
         allData = Array.isArray(data) ? data : [];
         isDataLoaded = true;
+        setPreloadIndicator('ready');
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(allData));
           localStorage.setItem(CACHE_TIME_KEY, String(new Date().getTime()));
@@ -237,6 +296,7 @@
         return allData;
       })
       .catch(err => {
+        setPreloadIndicator('error');
         throw err;
       })
       .finally(() => {
